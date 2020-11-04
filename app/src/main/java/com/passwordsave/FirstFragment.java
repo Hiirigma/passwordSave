@@ -11,9 +11,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class FirstFragment extends Fragment {
-    private EditText et_password = null;
+    private TextInputEditText et_password = null;
     private String s_password = null;
     private boolean isFABOpen = false;
     private FloatingActionButton fab_add = null;
@@ -73,8 +74,9 @@ public class FirstFragment extends Fragment {
         fab_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                et_password = new EditText(getContext());
+                et_password = (TextInputEditText) view.findViewById(R.id.inp_pass);
                 s_password = et_password.getText().toString();
+                
                 NavHostFragment.findNavController(FirstFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
             }
