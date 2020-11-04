@@ -13,32 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-    private boolean isFABOpen = false;
-    private FloatingActionButton fab_add = null;
-    private FloatingActionButton fab_del = null;
-    private FloatingActionButton fab_view = null;
-    private FloatingActionButton fab_export = null;
-    private FloatingActionButton fab_import = null;
-
-
-
-    private void showFABMenu(){
-        isFABOpen=true;
-        fab_add.animate().translationY(-getResources().getDimension(R.dimen.standard_1));
-        fab_del.animate().translationY(-getResources().getDimension(R.dimen.standard_2));
-        fab_view.animate().translationY(-getResources().getDimension(R.dimen.standard_3));
-        fab_export.animate().translationY(-getResources().getDimension(R.dimen.standard_4));
-        fab_import.animate().translationY(-getResources().getDimension(R.dimen.standard_5));
-    }
-
-    private void closeFABMenu(){
-        isFABOpen=false;
-        fab_add.animate().translationY(0);
-        fab_del.animate().translationY(0);
-        fab_view.animate().translationY(0);
-        fab_export.animate().translationY(0);
-        fab_import.animate().translationY(0);
-    }
 
 
     @Override
@@ -47,24 +21,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fabMain = (FloatingActionButton) findViewById(R.id.fabMain);
-        fab_add = (FloatingActionButton) findViewById(R.id.fabAdd);
-        fab_del = (FloatingActionButton) findViewById(R.id.fabDel);
-        fab_view = (FloatingActionButton) findViewById(R.id.fabView);
-        fab_export = (FloatingActionButton) findViewById(R.id.fabExport);
-        fab_import = (FloatingActionButton) findViewById(R.id.fabImport);
-        fabMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!isFABOpen){
-                    showFABMenu();
-                }else{
-                    closeFABMenu();
-                }
-            }
-        });
-
 
     }
 
