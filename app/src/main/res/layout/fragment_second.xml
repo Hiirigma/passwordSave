@@ -1,27 +1,78 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".SecondFragment">
 
-    <TextView
-        android:id="@+id/textview_second"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/button_second"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <ListView
+        android:id="@+id/mylistlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="MissingConstraints">
+    </ListView>
 
-    <Button
-        android:id="@+id/button_second"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_Export2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/previous"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_second" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_margin="@dimen/fab_margin"
+        android:background="?attr/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        app:srcCompat="@android:drawable/ic_menu_save"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    android:id="@+id/fab_Import2"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/fab_margin"
+    android:background="?attr/colorAccent"
+    app:backgroundTint="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+    app:srcCompat="@android:drawable/ic_menu_upload"
+    tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_Change2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:background="?attr/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_Return2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:background="?attr/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        app:srcCompat="@android:drawable/ic_media_previous"
+        tools:ignore="MissingConstraints" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_Main2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/fab_margin"
+        android:layout_marginTop="@dimen/fab_margin"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        android:background="?attr/colorAccent"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        app:srcCompat="@android:drawable/ic_menu_view"
+        tools:ignore="MissingConstraints" />
+
+</RelativeLayout>
