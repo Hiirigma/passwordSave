@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -68,23 +69,57 @@ public class FirstFragment extends Fragment {
                 }
             }
         });
-        fab_view.setOnClickListener(new View.OnClickListener() {
+
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        s_password_global = et_password.getText().toString();
+        final String s_digest = messageDigest.digest(s_password_global.getBytes()).toString();
+        Log.d(TAG, s_digest);
+        dataBaseSql = new DataBaseSql(getContext(),s_digest);
+        fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-                    s_password_global = et_password.getText().toString();
-                    String s_digest = messageDigest.digest(s_password_global.getBytes()).toString();
-                    Log.d(TAG, s_digest);
-                    dataBaseSql = new DataBaseSql(getContext(),s_password_global);
-
-
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
+                if (dataBaseSql.createDatabase())
+                {
+                    Toast.makeText(getContext(), "Successful add new table", Toast.LENGTH_LONG).show();
                 }
+                else
+                {
+                    Toast.makeText(getContext(), "Can't create table", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
-                NavHostFragment.findNavController(FirstFragment.this)
-                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+        fab_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                if (dataBaseSql.checkTableExists(s_digest)) {
+                    NavHostFragment.findNavController(FirstFragment.this)
+                            .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Can't verify password", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        fab_del.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (dataBaseSql.deleteDatabase(s_digest))
+                {
+                    Toast.makeText(getContext(), "Some problem with deleting table", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Toast.makeText(getContext(), "Table isn't exists from now", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

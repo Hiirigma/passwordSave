@@ -17,7 +17,7 @@ public class DataBaseSql extends SQLiteOpenHelper
         s_Database_global = sName;
     }
 
-    public void createDB()
+    public boolean createDatabase()
     {
         SQLiteDatabase dbApplication = this.getWritableDatabase();
         dbApplication.execSQL("create table if not exists '" + s_Database_global + "' ("
@@ -26,16 +26,12 @@ public class DataBaseSql extends SQLiteOpenHelper
                 + "login_ text,"
                 + "pass_ text,"
                 + "info_ text" + ");");
+        return this.checkTableExists(s_Database_global);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table if not exists '" + s_Database_global + "' ("
-                + "id_ integer primary key autoincrement,"
-                + "app_ text,"
-                + "login text,"
-                + "pass text,"
-                + "addit text" + ");");
+
     }
 
     public int checkDB(String sApp, String sLogin) {
@@ -150,11 +146,30 @@ public class DataBaseSql extends SQLiteOpenHelper
         return true;
     }
 
-    public boolean deleteFromDB(String sName)
+    public boolean checkTableExists(String sName)
     {
         SQLiteDatabase dbApplication = this.getWritableDatabase();
         dbApplication.execSQL("drop table if exists '" + s_Database_global + "'");
-        return true;
+        String sql = "SELECT * FROM sqlite_master WHERE type='table' AND name='"+sName+"'";
+
+        Cursor mCursor = dbApplication.rawQuery(sql, null);
+        if (mCursor.getCount() > 0) {
+            return true;
+        }
+        mCursor.close();
+        return false;
+    }
+
+
+    public boolean deleteDatabase(String sName)
+    {
+        SQLiteDatabase dbApplication = this.getWritableDatabase();
+        if (this.checkTableExists(sName) == false)
+        {
+            return false;
+        }
+        dbApplication.execSQL("drop table if exists '" + sName + "'");
+        return this.checkTableExists(sName);
     }
 
     public void deleteItem(int dId)
