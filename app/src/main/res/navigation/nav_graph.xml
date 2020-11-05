@@ -29,6 +29,10 @@
         <action
             android:id="@+id/action_SecondFragment_to_ThirdFragment"
             app:destination="@id/ThirdFragment" />
+
+        <action
+            android:id="@+id/action_SecondFragment_to_FourthFragment"
+            app:destination="@id/FourthFragment" />
     </fragment>
 
     <fragment
@@ -41,5 +45,18 @@
             android:id="@+id/action_ThirdFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/FourthFragment"
+        android:label="@string/third_fragment_label"
+        tools:layout="@layout/fragment_xml">
+
+        <action
+            android:id="@+id/action_FourthFragment_to_SecondFragment"
+            app:destination="@id/SecondFragment" />
+    </fragment>
+
+
+
 
 </navigation>

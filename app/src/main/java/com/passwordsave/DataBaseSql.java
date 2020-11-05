@@ -11,6 +11,7 @@ public class DataBaseSql extends SQLiteOpenHelper
 {
     private static final int DATABASE_VERSION = 1;
     private final String DATABASE_PASS = "pass";
+    private final String DATABASE_APP = "app";
     private static final String DATABASE_NAME = "passDatabase.db";
     public DataBaseSql(Context context) {
         super(context,  DATABASE_NAME, null, DATABASE_VERSION);
@@ -87,6 +88,45 @@ public class DataBaseSql extends SQLiteOpenHelper
         return l_d_id;
     }
 
+    public long verifyData(String s_name, String [] s_data) {
+        SQLiteDatabase dbApplication = this.getReadableDatabase();
+        String l_s_pass;
+        String l_s_login;
+        String l_s_app;
+        long l_d_id = -1;
+        Cursor cursor = dbApplication.query(s_name, null, null, null, null, null, null);
+        if (cursor == null)
+        {
+            return l_d_id;
+        }
+        if (cursor.moveToFirst()) {
+
+            if (s_name.equals(DATABASE_APP)) {
+                int idColIndex = cursor.getColumnIndex("id_");
+                int passColIndex = cursor.getColumnIndex("pass_");
+                int appColIndex = cursor.getColumnIndex("app_");
+                int loginColIndex = cursor.getColumnIndex("login_");
+
+                if (s_data.length < 6) {
+                    return l_d_id;
+                }
+
+                do {
+                    l_s_pass = cursor.getString(passColIndex);
+                    l_s_login = cursor.getString(loginColIndex);
+                    l_s_app = cursor.getString(appColIndex);
+                    if (s_data[0].equals(l_s_app) && s_data[1].equals(l_s_login) && s_data[2].equals(l_s_pass)) {
+                        l_d_id = cursor.getInt(idColIndex);
+                        break;
+                    }
+                } while (cursor.moveToNext());
+            }
+
+        }
+        cursor.close();
+        return l_d_id;
+    }
+
 
     public boolean addToDatabase(String s_name, String [] sData)
     {
@@ -119,15 +159,15 @@ public class DataBaseSql extends SQLiteOpenHelper
         return this.verifyPassword(s_name,s_password);
     }
 
-    public boolean addToDBToId(String s_name, String sTarget, String sName, String sPass, String sAddit, int dId)
+    public boolean addToToDatabaseById(String s_name, String [] sData, int d_id)
     {
         SQLiteDatabase dbApplication = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("app_", sTarget);
-        contentValues.put("login_", sName);
-        contentValues.put("pass_", sPass);
-        contentValues.put("info_", sAddit);
-        long rowID = dbApplication.update(s_name, contentValues, "id_="+dId,null);
+        contentValues.put("app_", sData[0]);
+        contentValues.put("login_", sData[1]);
+        contentValues.put("pass_", sData[2]);
+        contentValues.put("info_", sData[3]);
+        long rowID = dbApplication.update(s_name, contentValues, "id_="+d_id,null);
         return true;
     }
 

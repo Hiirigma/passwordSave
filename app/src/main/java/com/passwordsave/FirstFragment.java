@@ -156,7 +156,15 @@ public class FirstFragment extends Fragment {
                 }
                 else
                 {
-                    Toast.makeText(getContext(), "Table isn't exists from now", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Password table isn't exists from now", Toast.LENGTH_LONG).show();
+                    if (dataBaseSql.deleteDatabase(APP_DB_NAME) == false)
+                    {
+                        Toast.makeText(getContext(), "Successfully delete applications table", Toast.LENGTH_LONG).show();
+                    }else
+                    {
+                        Toast.makeText(getContext(), "Can't delete applications table", Toast.LENGTH_LONG).show();
+                    }
+
                 }
             }
         });
