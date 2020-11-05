@@ -92,14 +92,18 @@ public class SecondFragment extends Fragment {
                 xmlRecords += xml_data_cl;
 
                 Bundle bundle = new Bundle();
+                bundle.putBoolean("mode",true);
                 bundle.putString("xml",xmlRecords);
                 NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment,bundle);
+                        .navigate(R.id.action_SecondFragment_to_XmlFragment,bundle);
 
         }
         else
         {
-
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("mode",false);
+            NavHostFragment.findNavController(SecondFragment.this)
+                    .navigate(R.id.action_SecondFragment_to_XmlFragment,bundle);
         }
     }
 
@@ -111,6 +115,15 @@ public class SecondFragment extends Fragment {
             {
                 return;
             }
+
+//            if (getArguments() != null)
+//            {
+//                String s_xml = getArguments().getString("xml");
+//
+//            }
+
+
+
             g_sa_pos = new int[dSize];
             g_sa_data = new String [6][dSize];
             final String[][] sda_data = new String [6][dSize];

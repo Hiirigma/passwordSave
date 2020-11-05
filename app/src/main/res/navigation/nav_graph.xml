@@ -31,8 +31,8 @@
             app:destination="@id/ThirdFragment" />
 
         <action
-            android:id="@+id/action_SecondFragment_to_FourthFragment"
-            app:destination="@id/FourthFragment" />
+            android:id="@+id/action_SecondFragment_to_XmlFragment"
+            app:destination="@id/XmlFragment" />
     </fragment>
 
     <fragment
@@ -47,12 +47,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/FourthFragment"
+        android:id="@+id/XmlFragment"
+        android:name="com.passwordsave.XmlFragment"
         android:label="@string/third_fragment_label"
         tools:layout="@layout/fragment_xml">
 
         <action
-            android:id="@+id/action_FourthFragment_to_SecondFragment"
+            android:id="@+id/action_XmlFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
     </fragment>
 
