@@ -14,30 +14,31 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.NoSuchPaddingException;
 
 public class FirstFragment extends Fragment {
     private static final String TAG = "FirstFrag";
+    public static DataBaseSql dataBaseSql;
     private TextInputEditText et_password = null;
     private String s_password_global = null;
     private boolean isFABOpen = false;
-    private FloatingActionButton fab_add = null;
     private FloatingActionButton fab_del = null;
     private FloatingActionButton fab_view = null;
-    private DataBaseSql dataBaseSql = null;
+    private final String PASS_DB_NAME = "pass";
+    private final String APP_DB_NAME = "app";
+    private long d_pass_id = -1;
 
 
     private void showFABMenu(){
         isFABOpen=true;
-        fab_add.animate().translationY(-getResources().getDimension(R.dimen.standard_1));
-        fab_del.animate().translationY(-getResources().getDimension(R.dimen.standard_2));
-        fab_view.animate().translationY(-getResources().getDimension(R.dimen.standard_3));
+        fab_del.animate().translationY(-getResources().getDimension(R.dimen.standard_1));
+        fab_view.animate().translationY(-getResources().getDimension(R.dimen.standard_2));
     }
 
     private void closeFABMenu(){
         isFABOpen=false;
-        fab_add.animate().translationY(0);
         fab_del.animate().translationY(0);
         fab_view.animate().translationY(0);
     }
@@ -55,7 +56,6 @@ public class FirstFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         FloatingActionButton fabMain = (FloatingActionButton) view.findViewById(R.id.fabMain);
-        fab_add = (FloatingActionButton)  view.findViewById(R.id.fabAdd);
         fab_del = (FloatingActionButton)  view.findViewById(R.id.fabDel);
         fab_view = (FloatingActionButton)  view.findViewById(R.id.fabView);
         et_password = (TextInputEditText)view.findViewById(R.id.inp_pass);
@@ -70,41 +70,74 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        MessageDigest messageDigest = null;
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        s_password_global = et_password.getText().toString();
-        final String s_digest = messageDigest.digest(s_password_global.getBytes()).toString();
-        Log.d(TAG, s_digest);
-        dataBaseSql = new DataBaseSql(getContext(),s_digest);
-        fab_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (dataBaseSql.createDatabase())
-                {
-                    Toast.makeText(getContext(), "Successful add new table", Toast.LENGTH_LONG).show();
-                }
-                else
-                {
-                    Toast.makeText(getContext(), "Can't create table", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-
         fab_view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
-                if (dataBaseSql.checkTableExists(s_digest)) {
+                s_password_global = et_password.getText().toString();
+                final String s_digest = CryptoLib.md5(s_password_global);
+                Log.d(TAG, s_digest);
+                dataBaseSql = new DataBaseSql(getContext());
+
+
+                if (dataBaseSql.checkTableExists(PASS_DB_NAME)) {
+                    if (dataBaseSql.verifyPassword(PASS_DB_NAME,s_digest) == -1)
+                    {
+                        d_pass_id = dataBaseSql.addPasswordToDatabase(PASS_DB_NAME,s_digest);
+                        if (d_pass_id == -1)
+                        {
+                            Toast.makeText(getContext(), "Can't add password", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        else {
+                            Toast.makeText(getContext(), "Successfully add password", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    try {
+                        CryptoLib.setKey(s_password_global);
+                    } catch (NoSuchPaddingException e) {
+                        e.printStackTrace();
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
                     NavHostFragment.findNavController(FirstFragment.this)
                             .navigate(R.id.action_FirstFragment_to_SecondFragment);
                 }
                 else
                 {
                     Toast.makeText(getContext(), "Can't verify password", Toast.LENGTH_LONG).show();
+                    if (dataBaseSql.createDatabase(PASS_DB_NAME))
+                    {
+                        Toast.makeText(getContext(), "Successful add new table", Toast.LENGTH_LONG).show();
+                        if (dataBaseSql.verifyPassword(PASS_DB_NAME,s_digest) != -1)
+                        {
+                            Toast.makeText(getContext(), "Password already exists", Toast.LENGTH_LONG).show();
+                        }
+                        else
+                        {
+                            d_pass_id = dataBaseSql.addPasswordToDatabase(PASS_DB_NAME,s_digest);
+                            if (d_pass_id == -1)
+                            {
+                                Toast.makeText(getContext(), "Can't add password", Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                Toast.makeText(getContext(), "Successfully add password", Toast.LENGTH_LONG).show();
+                                try {
+                                    CryptoLib.setKey(s_password_global);
+                                } catch (NoSuchPaddingException e) {
+                                    e.printStackTrace();
+                                } catch (NoSuchAlgorithmException e) {
+                                    e.printStackTrace();
+                                }
+                                NavHostFragment.findNavController(FirstFragment.this)
+                                        .navigate(R.id.action_FirstFragment_to_SecondFragment);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Can't create table", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -112,7 +145,12 @@ public class FirstFragment extends Fragment {
         fab_del.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (dataBaseSql.deleteDatabase(s_digest))
+                s_password_global = et_password.getText().toString();
+                final String s_digest = CryptoLib.md5(s_password_global);
+                Log.d(TAG, s_digest);
+                dataBaseSql = new DataBaseSql(getContext());
+
+                if (dataBaseSql.deletePasswordFromDatabase(PASS_DB_NAME,s_digest) == -1)
                 {
                     Toast.makeText(getContext(), "Some problem with deleting table", Toast.LENGTH_LONG).show();
                 }

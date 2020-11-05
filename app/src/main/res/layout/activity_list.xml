@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/linear_layout"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/textview_id_al"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/textview_app_al"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="App"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <TextView
+            android:id="@+id/textview_login_al"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textAppearance="?android:attr/textAppearanceListItemSecondary"
+            android:textSize="18sp"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+    </LinearLayout>
+</RelativeLayout>

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,13 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
+
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 public class ThirdFragment extends Fragment {
     private static final String TAG = "ThirdFrag";
@@ -21,8 +29,15 @@ public class ThirdFragment extends Fragment {
     private FloatingActionButton fab_return = null;
     private FloatingActionButton fab_replace = null;
     private FloatingActionButton fab_delete = null;
-    private DataBaseSql dataBaseSql = null;
-
+    public static DataBaseSql dataBaseSql;
+    private TextInputEditText tiet_app = null;
+    private TextInputEditText tiet_login = null;
+    private TextInputEditText tiet_info = null;
+    private TextInputEditText tiet_pass = null;
+    private final String PASS_DB_NAME = "pass";
+    private final String APP_DB_NAME = "app";
+    private String [] s_a_data = null;
+    private String [] s_a_enc_data = null;
 
     private void showFABMenu() {
         isFABOpen = true;
@@ -57,6 +72,13 @@ public class ThirdFragment extends Fragment {
         fab_add = (FloatingActionButton) view.findViewById(R.id.fab_Add3);
         fab_delete = (FloatingActionButton) view.findViewById(R.id.fab_Del3);
         fab_replace = (FloatingActionButton) view.findViewById(R.id.fab_Replace3);
+
+        tiet_app = (TextInputEditText)view.findViewById(R.id.edittext_app3);
+        tiet_login = (TextInputEditText)view.findViewById(R.id.edittext_login3);
+        tiet_pass = (TextInputEditText)view.findViewById(R.id.edittext_pass3);
+        tiet_info = (TextInputEditText)view.findViewById(R.id.edittext_info3);
+        s_a_data = new String[6];
+        s_a_enc_data = new String[6];
         fabMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,6 +101,58 @@ public class ThirdFragment extends Fragment {
         fab_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (tiet_app == null || tiet_login == null || tiet_pass == null || tiet_info == null)
+                {
+                    Toast.makeText(getContext(), "Trouble with tiet object", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                dataBaseSql = new DataBaseSql(getContext());
+
+                // app
+                s_a_data[0] = tiet_app.getEditableText().toString();
+                // login
+                s_a_data[1] = tiet_login.getEditableText().toString();
+                // pass
+                s_a_data[2] = tiet_pass.getEditableText().toString();
+                // info
+                s_a_data[3] = tiet_info.getEditableText().toString();
+
+                if (s_a_data[0].equals("") || s_a_data[1].equals("") || s_a_data[2].equals(""))
+                {
+                    Toast.makeText(getContext(), "Please enter in the pole", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                try {
+                    s_a_enc_data[0] = CryptoLib.encrypt(s_a_data[0]);
+                    s_a_enc_data[1] = CryptoLib.encrypt(s_a_data[1]);
+                    s_a_enc_data[2] = CryptoLib.encrypt(s_a_data[2]);
+                    s_a_enc_data[3] = CryptoLib.encrypt(s_a_data[3]);
+
+
+                    if (dataBaseSql.addToDatabase(APP_DB_NAME,s_a_enc_data) == false)
+                    {
+                        Toast.makeText(getContext(), "Can't add data to database", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(getContext(), "Successfully add data to table", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                }
+
                 NavHostFragment.findNavController(ThirdFragment.this)
                         .navigate(R.id.action_ThirdFragment_to_SecondFragment);
             }
