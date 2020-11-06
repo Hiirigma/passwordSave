@@ -14,12 +14,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
 
 public class XmlFragment extends Fragment {
     private static final String TAG = "XmlFrag";
@@ -27,6 +21,7 @@ public class XmlFragment extends Fragment {
     private FloatingActionButton fab_import = null;
     private FloatingActionButton fab_return = null;
     private TextInputEditText tiet_xml = null;
+    private TextInputEditText tiet_pass = null;
 
     private void showFABMenu() {
         isFABOpen = true;
@@ -60,7 +55,7 @@ public class XmlFragment extends Fragment {
         fab_import = (FloatingActionButton) view.findViewById(R.id.fab_import_xml);
 
         tiet_xml = (TextInputEditText)view.findViewById(R.id.xml_line);
-
+        tiet_pass = (TextInputEditText)view.findViewById(R.id.edittext_pass_xml);
         fabMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,7 +92,7 @@ public class XmlFragment extends Fragment {
         fab_import.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (tiet_xml == null) {
+                if (tiet_xml == null || tiet_pass == null) {
                     Toast.makeText(getContext(), "Trouble with tiet object", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -106,10 +101,13 @@ public class XmlFragment extends Fragment {
                     Toast.makeText(getContext(), "Nothing to export or import", Toast.LENGTH_LONG).show();
                     return;
                 }
+
+
                 if (getArguments().getBoolean("mode") == false) {
-                    String s_xml = getArguments().getString("xml");
+                    //String s_xml = getArguments().getString("xml");
                     Bundle bundle = new Bundle();
                     bundle.putString("xml", tiet_xml.getEditableText().toString());
+                    bundle.putString("pass", tiet_pass.getEditableText().toString());
                     NavHostFragment.findNavController(XmlFragment.this)
                             .navigate(R.id.action_XmlFragment_to_SecondFragment, bundle);
                 }

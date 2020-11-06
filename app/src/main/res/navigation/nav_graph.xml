@@ -15,7 +15,13 @@
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
 
+        <action
+            android:id="@+id/action_FirstFragment_to_ReplaceFragment"
+            app:destination="@id/ReplaceFragment" />
+
     </fragment>
+
+
     <fragment
         android:id="@+id/SecondFragment"
         android:name="com.passwordsave.SecondFragment"
@@ -57,7 +63,17 @@
             app:destination="@id/SecondFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/ReplaceFragment"
+        android:name="com.passwordsave.ReplaceFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_replace">
 
+        <action
+            android:id="@+id/action_ReplaceFragment_to_FirstFragment"
+            app:destination="@id/FirstFragment" />
+
+    </fragment>
 
 
 </navigation>

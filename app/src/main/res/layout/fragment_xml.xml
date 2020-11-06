@@ -24,6 +24,25 @@
         tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="16dp"></com.google.android.material.textfield.TextInputEditText>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_pass_xml"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/colorPrimary"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edittext_pass_xml"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password (for import)"
+            android:inputType="textPassword"
+            android:textColorHighlight="#FFFFFF" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

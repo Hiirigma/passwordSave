@@ -82,7 +82,10 @@ public class DataBaseSql extends SQLiteOpenHelper
                     }
                 } while (cursor.moveToNext());
             }
-
+        }
+        else
+        {
+            l_d_id = -2;
         }
         cursor.close();
         return l_d_id;
@@ -193,7 +196,7 @@ public class DataBaseSql extends SQLiteOpenHelper
         return dItr;
     }
 
-    public boolean getFromDB(String s_name,int[] dPos, String[][] sData)
+    public boolean getFromDB(String s_name, int[] dPos, String[][] sData)
     {
         if (sData.length < 6)
         {

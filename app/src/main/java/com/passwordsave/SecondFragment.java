@@ -1,6 +1,8 @@
 package com.passwordsave;
 
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,31 +15,29 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.textfield.TextInputEditText;
 
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+
 
 public class SecondFragment extends Fragment {
     private static final String TAG = "SecondFrag";
     private static ListView _listView = null;
-    private TextInputEditText et_password = null;
-    private String s_password_global = null;
     private boolean isFABOpen = false;
     private FloatingActionButton fab_change = null;
     private FloatingActionButton fab_return = null;
     private FloatingActionButton fab_export = null;
     private FloatingActionButton fab_import = null;
     public static DataBaseSql dataBaseSql;
-    private final String PASS_DB_NAME = "pass";
     private final String APP_DB_NAME = "app";
     private int [] g_sa_pos = null;
     private String [][] g_sa_data = null;
@@ -107,22 +107,120 @@ public class SecondFragment extends Fragment {
         }
     }
 
+    XmlPullParser prepareXpp(String s_xml) throws XmlPullParserException {
+            // получаем фабрику
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            // включаем поддержку namespace (по умолчанию выключена)
+            factory.setNamespaceAware(true);
+            // создаем парсер
+            XmlPullParser xpp = factory.newPullParser();
+            // даем парсеру на вход Reader
+            xpp.setInput(new StringReader(s_xml));
+            return xpp;
+    }
 
-    private void paintWindow()
-    {
+    private void paintWindow() throws XmlPullParserException {
+            if (getArguments() != null)
+            {
+                String s_xml = getArguments().getString("xml");
+                String s_imp_pass = getArguments().getString("pass");
+                String tmp = "";
+                int d_arr_itr = 0;
+                try {
+                    XmlPullParser xpp = prepareXpp(s_xml);
+                    String s_tag = "";
+                    String s_data[][] = new String[128][6];
+                    int d_itr = 0;
+                    while (xpp.getEventType() != XmlPullParser.END_DOCUMENT && d_itr < 64) {
+                        switch (xpp.getEventType()) {
+                            // начало документа
+                            case XmlPullParser.START_DOCUMENT:
+                                Log.d(TAG, "START_DOCUMENT");
+                                break;
+                            // начало тэга
+                            case XmlPullParser.START_TAG:
+                                s_tag =  xpp.getName();
+                                Log.d(TAG, "START_TAG: name = " + xpp.getName()
+                                        + ", depth = " + xpp.getDepth() + ", attrCount = "
+                                        + xpp.getAttributeCount());
+                                tmp = "";
+                                for (int i = 0; i < xpp.getAttributeCount(); i++) {
+                                    tmp = tmp + xpp.getAttributeName(i) + " = "
+                                            + xpp.getAttributeValue(i) + ", ";
+                                }
+                                if (!TextUtils.isEmpty(tmp))
+                                    Log.d(TAG, "Attributes: " + tmp);
+                                break;
+                            // конец тэга
+                            case XmlPullParser.END_TAG:
+                                Log.d(TAG, "END_TAG: name = " + xpp.getName());
+                                break;
+                            // содержимое тэга
+                            case XmlPullParser.TEXT:
+                                if (s_tag.equals("id_"))
+                                {
+                                    s_tag = "";
+                                }else if (s_tag.equals("app_"))
+                                {
+                                    s_data[d_arr_itr][0]= xpp.getText();
+                                    s_tag = "";
+                                }else if (s_tag.equals("log_"))
+                                {
+                                    s_data[d_arr_itr][1]= xpp.getText();
+                                    s_tag = "";
+                                }else if (s_tag.equals("pass_"))
+                                {
+                                    s_data[d_arr_itr][2]= xpp.getText();
+                                    s_tag = "";
+                                }else if (s_tag.equals("info_"))
+                                {
+                                    s_data[d_arr_itr][3]= xpp.getText();
+                                    s_tag = "";
+                                    d_arr_itr += 1;
+                                }
+
+                                Log.d(TAG, "text = " + xpp.getText());
+                                break;
+
+                            default:
+                                break;
+                        }
+                        // следующий элемент
+                        d_itr++;
+                        xpp.next();
+                    }
+                    Log.d(TAG, "END_DOCUMENT");
+                    String s_enc_data[]= new String[6];
+                    for (int i = 0; i < d_arr_itr; i++)
+                    {
+                        s_enc_data[0] = CryptoLib.encrypt(CryptoLib.decrypt(s_data[i][0],s_imp_pass));
+                        s_enc_data[1] = CryptoLib.encrypt(CryptoLib.decrypt(s_data[i][1],s_imp_pass));
+                        s_enc_data[2] = CryptoLib.encrypt(CryptoLib.decrypt(s_data[i][2],s_imp_pass));
+                        s_enc_data[3] = CryptoLib.encrypt(CryptoLib.decrypt(s_data[i][3],s_imp_pass));
+                        dataBaseSql.addToDatabase(APP_DB_NAME,s_enc_data);
+                    }
+
+
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InvalidKeyException e) {
+                    e.printStackTrace();
+                } catch (InvalidAlgorithmParameterException e) {
+                    e.printStackTrace();
+                } catch (IllegalBlockSizeException e) {
+                    e.printStackTrace();
+                } catch (BadPaddingException e) {
+                    e.printStackTrace();
+                }
+            }
+
             int dSize = dataBaseSql.getSizeDB(APP_DB_NAME);
             if (dSize <= 0)
             {
                 return;
             }
-
-//            if (getArguments() != null)
-//            {
-//                String s_xml = getArguments().getString("xml");
-//
-//            }
-
-
 
             g_sa_pos = new int[dSize];
             g_sa_data = new String [6][dSize];
@@ -210,7 +308,11 @@ public class SecondFragment extends Fragment {
                 return;
             }
         }
-        paintWindow();
+        try {
+            paintWindow();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
         fabMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -235,7 +337,11 @@ public class SecondFragment extends Fragment {
             public void onClick(View view) {
                 NavHostFragment.findNavController(SecondFragment.this)
                         .navigate(R.id.action_SecondFragment_to_ThirdFragment);
-                paintWindow();
+                try {
+                    paintWindow();
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -243,7 +349,11 @@ public class SecondFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 parseXML(true);
-                paintWindow();
+                try {
+                    paintWindow();
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -252,7 +362,11 @@ public class SecondFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 parseXML(false);
-                paintWindow();
+                try {
+                    paintWindow();
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
